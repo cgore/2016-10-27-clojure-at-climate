@@ -266,26 +266,63 @@
 
 \begin{slide}
   \h{\texttt{src/something/core.clj}}
+
+\begin{lstlisting}
+(ns something.core)
+
+(defn foo
+  "I don't do a whole lot."
+  [x]
+  (println x "Hello, World!"))
+\end{lstlisting}
+
 \end{slide}
 
 
 \begin{slide}
-  \h{\texttt{test/something/core\_test.clj}}
+  \h{\texttt{test/something/core\_test.clj}\\
+  \textit{(You write tests, right?)}}
+
+\begin{lstlisting}
+(ns something.core-test
+  (:require [clojure.test :refer :all]
+            [something.core :refer :all]))
+
+(deftest a-test
+  (testing "FIXME, I fail."
+    (is (= 0 1))))
+  \end{lstlisting}
 \end{slide}
 
 
 \begin{slide}
   \h{\texttt{LICENSE}}
+
+  This is defaulting to the Eclipse Public License, which you will maybe want to
+  change.
 \end{slide}
 
 
 \begin{slide}
   \h{\texttt{README.md}}
+
+  You should put some useful getting started info here, so that you can remember
+  what to do in six months when you have to work on this component again.
 \end{slide}
 
 
 \begin{slide}
   \h{\texttt{project.clj}}
+
+\begin{lstlisting}
+(defproject something "0.1.0-SNAPSHOT"
+  :description "FIXME: write description"
+  :url "http://example.com/FIXME"
+  :license
+  {:name "Eclipse Public License"
+   :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :dependencies [[org.clojure/clojure "1.8.0"]])
+\end{lstlisting}
 \end{slide}
 
 
