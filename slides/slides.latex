@@ -237,7 +237,7 @@
 \begin{slide}
   \h{Building out a brand new Clojure app using Leiningen.}
 
-  \fullSlideImage{leiningen.eps}
+  \fullSlideImage{leiningen-bluebg.eps}
 
   \texttt{lein new something}
 \end{slide}
