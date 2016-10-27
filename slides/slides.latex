@@ -227,6 +227,13 @@
 
 
 \begin{slide}
+  \h{It's a pretty cool place to work, we've even got a giant globe to play with.}
+
+  \fullSlideImage{climate-globe.eps}
+\end{slide}
+
+
+\begin{slide}
   \h{Clojure is Lisp}
 
   \fullSlideImage{mccarthy.eps}
@@ -552,6 +559,28 @@
 
 
 \begin{slide}
+  \h{We have a microservice architecture at Climate.}
+
+  \fullSlideImage{monolith-microservices.eps}
+\end{slide}
+
+
+\begin{slide}
+  \h{Microservices are actually a good idea.}
+
+  \begin{itemize}
+  \item If one component fails, the rest is usually still up.
+  \item We can scale each one independently for differing demand.
+  \item A team might only need to learn about a few microservices, instead of
+    the whole ball of wax.
+  \item Since they're fully independent, there's a lot of freedom in choosing
+    tech stacks.  We've got Clojure, Python, Ruby, Scala, and even Java for some
+    reason.
+  \end{itemize}
+\end{slide}
+
+
+\begin{slide}
   \h{Satellite providers put up images for us to download.}
 
   \fullSlideImage{rapideye.eps}
@@ -594,6 +623,39 @@
   \h{(Most of our backend systems are named after Marvel comics.)}
 
   \fullSlideImage{marvel.eps}
+\end{slide}
+
+
+\begin{slide}
+  \h{Why all this stuff?  It's HUGE, that's why!}
+
+  \begin{leftSideImage}{andre.eps}
+    \begin{itemize}
+    \item 5m satellite imagery
+    \item for most of the USA
+    \item about every other week
+    \item back to 2011
+    \item and we're expanding
+    \item petabytes of imagery in Amazon S3
+    \item hundreds of instances in Amazon EC2
+    \end{itemize}
+  \end{leftSideImage}
+\end{slide}
+
+
+\begin{slide}
+  \h{Languages written in Clojure}
+
+  \begin{description}
+  \item [jank]  A statically typed functional programming language
+  \item [Lux] A functional, statically-typed Lisp.
+  \item [Sceje] a tiny scheme implementation on Top of Clojure.
+  \end{description}
+  
+  \textit{``If you give someone Fortran, he has Fortran. If you give someone
+    Lisp, he has any language he pleases.''}
+
+  -- Guy L. Steele.
 \end{slide}
 
 
