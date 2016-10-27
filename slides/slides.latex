@@ -139,6 +139,12 @@
   \includegraphics[width=2in,height=2.25in,keepaspectratio=true]{#1}
 }
 
+\newcommand{\halfSlideImageCentered}[1]{
+  \begin{center}
+    \halfSlideImage{#1}
+  \end{center}
+}
+
 \newcommand{\rightSideImageName}{you-must-supply-the-image-name.eps}
 \newenvironment{rightSideImage}[1]
 {
@@ -320,9 +326,274 @@
   :url "http://example.com/FIXME"
   :license
   {:name "Eclipse Public License"
-   :url "http://www.eclipse.org/legal/epl-v10.html"}
+   :url
+   "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]])
 \end{lstlisting}
+\end{slide}
+
+
+\begin{slide}
+  \h{Since Clojure is a Lisp, you probably want to use Emacs.  Because, nepotism.}
+
+  \fullSlideImage{emacs-and-cider.eps}
+\end{slide}
+
+\begin{slide}
+  \h{Hello, World!}
+
+\begin{lstlisting}
+(println "Hello, World!")
+\end{lstlisting}
+
+  That's it.
+
+\end{slide}
+
+
+\begin{slide}
+  \h{Math is lispy of course.}
+
+\begin{lstlisting}
+(/ (+ (* 1 2 3)
+      (* 4 5 6)
+      (* 7 8 9 10))
+   12.345)
+;; => 418.46901579586876
+\end{lstlisting}
+\end{slide}         
+
+
+\begin{slide}
+  \h{There's Java classes underneath it all.}
+
+\begin{lstlisting}
+(type 123)
+;; => java.lang.Long
+(type "123")
+;; => java.lang.String
+(type (type "123"))
+;; => java.lang.Class
+(type [1 2 3 4 5])
+;; => clojure.lang.PersistentVector
+(type '(1 2 3 4 5))
+;; => clojure.lang.PersistentList
+\end{lstlisting}
+\end{slide}
+
+
+\begin{slide}
+  \h{Java interop is pretty easy.}
+
+\begin{lstlisting}
+(.toUpperCase "stop shouting")
+;; => "STOP SHOUTING"
+(java.awt.Point. 1 2)
+;; => #object[java.awt.Point
+;;            0x4d59f5c5
+;;            "java.awt.Point[x=1,y=2]"]
+(.-x (java.awt.Point. 1 2))
+;; => 1
+\end{lstlisting}
+\end{slide}
+
+
+\begin{slide}
+  \h{But objects suck and hashmaps are awesome, so \texttt{bean} is your friend.}
+
+\begin{lstlisting}
+(bean java.awt.Color/BLUE)
+;; =>
+{:RGB -16776961,
+ :alpha 255,
+ :blue 255,
+ :class java.awt.Color,
+ :colorSpace #object[ ... ],
+ :green 0,
+ :red 0,
+ :transparency 1}
+\end{lstlisting}
+\end{slide}
+
+
+\begin{slide}
+  \h{Ring is the most commonly used web application library in Clojure.}
+
+  \texttt{https://github.com/ring-clojure/ring}
+
+\begin{lstlisting}
+(defproject something "0.1.0-SNAPSHOT"
+  ...
+  :dependencies [...
+                 [ring "1.5.0"]
+                 ...]
+  :ring {:handler hello-world.core/handler
+         :port 80}
+  ...)
+\end{lstlisting}
+\end{slide}
+
+
+\begin{slide}
+  \h{Ring is very simple in it's design.}
+
+  \begin{description}
+  \item [Requests] come in.
+  \item [Responses] go out.
+  \item [Handlers] map from requests to responses.
+  \item [Middleware] adds functionality to the handlers.  Nearly all additional
+    functionality can be implemented as just more middleware functions, it's
+    nothing but function composition.
+  \end{description}
+\end{slide}
+
+
+\begin{slide}
+  \h{A super-basic Ring handler function.}
+
+  Ring handlers map from requests to responses, both represented as hashmaps.
+  
+\begin{lstlisting}
+(ns hello-world.core)
+
+(defn handler [request]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body "Hello World"})
+\end{lstlisting}
+
+  And then just\\
+  \texttt{lein ring server}\\
+  at the command line to start it up.
+\end{slide}
+
+
+\begin{slide}
+  \h{Ring handler requests}
+
+  \begin{description}
+  \item [:server-port] The port handling the request.
+  \item [:server-name] server name / IP address.
+  \item [:remote-addr] The IP address of the client.
+  \item [:uri] The request URI (the full path after the domain name).
+  \item [:query-string] The query string, if present.
+  \item [:scheme] The transport protocol, either :http or :https.
+  \item [:request-method] The HTTP request method\\
+    \textit{(:get, :head, :options, :put, :post, or :delete)}
+  \item [:headers] An hashmap of lowercase header name strings to corresponding header value strings.
+  \item [:body] An InputStream for the request body, if present.
+  \end{description}
+\end{slide}
+
+
+\begin{slide}
+  \h{Ring handler responses}
+
+  \begin{description}
+  \item [:status] HTTP status code \textit{(200, 404, 500, ...)}
+  \item [:headers] hashmap of headers
+  \item [:body] This can be a String, ISeq, File, or InputStream.
+  \end{description}
+\end{slide}
+
+
+\begin{slide}
+  \h{Ring middleware}
+
+  Ring middleware are functions that add functionality to handlers.
+
+\begin{lstlisting}
+(defn wrap-content-type [handler content-type]
+  (fn [request]
+    (let [response (handler request)]
+      (assoc-in response
+                [:headers "Content-Type"]
+                content-type))))
+\end{lstlisting}
+
+  The middleware function is taking in the handler function (and sometimes some
+  additional arguments) and returning a new handler function.
+\end{slide}
+
+
+\begin{slide}
+  \h{Using Ring middleware}
+
+\begin{lstlisting}
+(def app
+  (wrap-content-type handler "text/html"))
+\end{lstlisting}
+
+  But you typically have more than one middleware, so the threading operator is
+  our friend:
+
+\begin{lstlisting}
+(def app
+  (-> handler
+      (wrap-content-type "text/html")
+      (wrap-keyword-params)
+      (wrap-params)))
+\end{lstlisting}
+\end{slide}
+
+
+\begin{slide}
+  \h{What exactly do we do at Climate?}
+
+  \fullSlideImage{climate-web.eps}
+\end{slide}
+
+
+\begin{slide}
+  \h{Basically, we take a lot of photos of corn from space: we're corn paparazzi.}
+
+  \fullSlideImage{corn-paparazzi.eps}
+\end{slide}
+
+
+\begin{slide}
+  \h{Satellite providers put up images for us to download.}
+
+  \fullSlideImage{rapideye.eps}
+\end{slide}
+
+
+\begin{slide}
+  \h{A bunch of Python code downloads the imagery we care about and stages it
+    locally.}
+
+  \fullSlideImage{python.eps}
+\end{slide}
+
+
+\begin{slide}
+  \h{Scrapbook (in Clojure) slices and dices the imagery into a very clever
+    database sitting on Amazon S3 and Amazon DynamoDB.}
+
+  \fullSlideImage{tiled-map.eps}
+\end{slide}
+
+
+\begin{slide}
+  \h{Toomie (in Ruby) realizes that imagery needs to be generated and tells
+    Galactus.}
+  
+  \halfSlideImageCentered{silver-surfer.eps}
+\end{slide}
+
+
+\begin{slide}
+  \h{Galactus (in Clojure) gets the image generation request, makes the images,
+    and puts them in a different S3/DynamoDB system.}
+
+  \fullSlideImage{Galactus}
+\end{slide}
+
+
+\begin{slide}
+  \h{(Most of our backend systems are named after Marvel comics.)}
+
+  \fullSlideImage{marvel.eps}
 \end{slide}
 
 
